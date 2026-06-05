@@ -25,8 +25,8 @@ app = FastAPI()
 socket_manager = SocketManager(app=app)
 ```
 
-
 Now you can use SocketIO directly from your `FastAPI` app object.
+
 ```python
 # socket_handlers.py
 from .app import app
@@ -68,7 +68,6 @@ Now install the dependencies and tests:
 To run the tests:
 
     pytest
-
 
 ## Run example
 

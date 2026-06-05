@@ -19,10 +19,16 @@ async def test(sid, *args, **kwargs):
 if __name__ == '__main__':
     import logging
     import sys
+    import os
+
+    # Add the parent directory to sys.path and PYTHONPATH so that uvicorn can find 'examples'
+    parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    sys.path.insert(0, parent_dir)
+    os.environ["PYTHONPATH"] = parent_dir + os.path.pathsep + os.environ.get("PYTHONPATH", "")
 
     logging.basicConfig(level=logging.DEBUG,
                         stream=sys.stdout)
 
     import uvicorn
 
-    uvicorn.run("examples.app:app", host='0.0.0.0', port=8000, reload=True, debug=False)
+    uvicorn.run("examples.app:app", host='0.0.0.0', port=8000, reload=True)
