@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { ForbiddenIcon } from '../icons';
 
 const Page404: React.FC = () => {

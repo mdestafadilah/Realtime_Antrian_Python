@@ -1,27 +1,20 @@
 import React from 'react';
-import routes from '../../routes/sidebar';
-import { NavLink, Route } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 import * as Icons from '../../icons';
+import routes from '../../routes/sidebar';
+import type { SidebarRoute } from '../../routes/sidebar';
 import SidebarSubmenu from './SidebarSubmenu';
-import { Button } from '@windmill/react-ui';
-
-type IconProps = React.SVGProps<SVGSVGElement> & { icon: string };
-
-type SidebarRoute = {
-  path?: string;
-  icon?: string;
-  name: string;
-  exact?: boolean;
-  routes?: SidebarRoute[];
-};
 
 const IconRegistry = Icons as unknown as Record<
   string,
   React.ComponentType<React.SVGProps<SVGSVGElement>>
 >;
 
+type IconProps = React.SVGProps<SVGSVGElement> & { icon: string };
+
 const Icon: React.FC<IconProps> = ({ icon, ...props }) => {
   const IconComponent = IconRegistry[icon];
+  if (!IconComponent) return null;
   return <IconComponent {...props} />;
 };
 
@@ -32,41 +25,36 @@ const SidebarContent: React.FC = () => {
         Windmill
       </a>
       <ul className="mt-6">
-        {(routes as SidebarRoute[]).map((route: SidebarRoute) =>
+        {routes.map((route: SidebarRoute) =>
           route.routes ? (
             <SidebarSubmenu route={route} key={route.name} />
           ) : (
             <li className="relative px-6 py-3" key={route.name}>
-              <NavLink
-                exact
+              <Link
                 to={route.path as string}
                 className="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
-                activeClassName="text-gray-800 dark:text-gray-100"
+                activeProps={{ className: 'text-gray-800 dark:text-gray-100' }}
               >
-                <Route path={route.path} exact={route.exact}>
-                  <span
-                    className="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg"
-                    aria-hidden="true"
-                  ></span>
-                </Route>
                 <Icon className="w-5 h-5" aria-hidden="true" icon={route.icon as string} />
                 <span className="ml-4">{route.name}</span>
-              </NavLink>
+              </Link>
             </li>
           )
         )}
       </ul>
       <div className="px-6 my-6">
-        <Button>
+        <button
+          type="button"
+          className="inline-flex items-center justify-center w-full px-5 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple"
+        >
           Create account
           <span className="ml-2" aria-hidden="true">
             +
           </span>
-        </Button>
+        </button>
       </div>
     </div>
   );
 };
 
 export default SidebarContent;
-export type { SidebarRoute };

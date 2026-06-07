@@ -4,6 +4,9 @@
  *
  * If you're looking to actual Router routes, go to
  * `routes/appRoutes.ts`
+ *
+ * The `icon` value matches a key in the lucide-react icon map used by
+ * SidebarContent / SidebarSubmenu.
  */
 
 export type SidebarSubmenuRoute = {
@@ -21,64 +24,12 @@ export type SidebarRoute = {
 
 const routes: SidebarRoute[] = [
   {
-    path: '/app/dashboard',
-    icon: 'HomeIcon',
-    name: 'Dashboard',
-  },
-  {
-    path: '/app/forms',
-    icon: 'FormsIcon',
-    name: 'Forms',
-  },
-  {
-    path: '/app/cards',
-    icon: 'CardsIcon',
-    name: 'Cards',
-  },
-  {
-    path: '/app/charts',
-    icon: 'ChartsIcon',
-    name: 'Charts',
-  },
-  {
-    path: '/app/buttons',
-    icon: 'ButtonsIcon',
-    name: 'Buttons',
-  },
-  {
-    path: '/app/modals',
-    icon: 'ModalsIcon',
-    name: 'Modals',
-  },
-  {
-    path: '/app/tables',
-    icon: 'TablesIcon',
-    name: 'Tables',
-  },
-  {
     icon: 'PagesIcon',
     name: 'Pages',
     routes: [
-      {
-        path: '/login',
-        name: 'Login',
-      },
-      {
-        path: '/create-account',
-        name: 'Create account',
-      },
-      {
-        path: '/forgot-password',
-        name: 'Forgot password',
-      },
-      {
-        path: '/app/404',
-        name: '404',
-      },
-      {
-        path: '/app/blank',
-        name: 'Blank',
-      },
+      { path: '/login', name: 'Login' },
+      { path: '/app/404', name: '404' },
+      { path: '/app/blank', name: 'Blank' },
     ],
   },
 ];

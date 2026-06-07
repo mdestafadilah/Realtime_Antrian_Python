@@ -1,10 +1,11 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-
-import ImageLight from '../assets/img/login-office.jpeg';
-import ImageDark from '../assets/img/login-office-dark.jpeg';
+import { Link } from '@tanstack/react-router';
 import { GithubIcon, TwitterIcon } from '../icons';
-import { Label, Input, Button } from '@windmill/react-ui';
+
+const ImageLight =
+  'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80';
+const ImageDark =
+  'https://images.unsplash.com/photo-1497366811353-6870744d04b2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80';
 
 const Login: React.FC = () => {
   return (
@@ -28,35 +29,52 @@ const Login: React.FC = () => {
           <main className="flex items-center justify-center p-6 sm:p-12 md:w-1/2">
             <div className="w-full">
               <h1 className="mb-4 text-xl font-semibold text-gray-700 dark:text-gray-200">Login</h1>
-              <Label>
+              <label className="block text-sm text-gray-700 dark:text-gray-400">
                 <span>Email</span>
-                <Input className="mt-1" type="email" placeholder="john@doe.com" />
-              </Label>
+                <input
+                  className="block w-full mt-1 text-sm border border-gray-300 rounded-md px-3 py-2 focus:border-purple-400 focus:outline-none focus:ring focus:ring-purple-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300"
+                  type="email"
+                  placeholder="john@doe.com"
+                />
+              </label>
 
-              <Label className="mt-4">
+              <label className="block mt-4 text-sm text-gray-700 dark:text-gray-400">
                 <span>Password</span>
-                <Input className="mt-1" type="password" placeholder="***************" />
-              </Label>
+                <input
+                  className="block w-full mt-1 text-sm border border-gray-300 rounded-md px-3 py-2 focus:border-purple-400 focus:outline-none focus:ring focus:ring-purple-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300"
+                  type="password"
+                  placeholder="***************"
+                />
+              </label>
 
-              <Button className="mt-4" block tag={Link} to="/app">
+              <Link
+                to="/"
+                className="block w-full mt-4 px-5 py-2 text-sm font-medium leading-5 text-center text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple"
+              >
                 Log in
-              </Button>
+              </Link>
 
               <hr className="my-8" />
 
-              <Button block layout="outline">
+              <button
+                type="button"
+                className="inline-flex items-center justify-center w-full px-5 py-2 text-sm font-medium leading-5 text-purple-600 transition-colors duration-150 border border-transparent rounded-lg dark:text-purple-400 active:bg-transparent hover:border-gray-500 focus:border-gray-500 focus:outline-none focus:shadow-outline-gray"
+              >
                 <GithubIcon className="w-4 h-4 mr-2" aria-hidden="true" />
                 Github
-              </Button>
-              <Button className="mt-4" block layout="outline">
+              </button>
+              <button
+                type="button"
+                className="inline-flex items-center justify-center w-full mt-4 px-5 py-2 text-sm font-medium leading-5 text-purple-600 transition-colors duration-150 border border-transparent rounded-lg dark:text-purple-400 active:bg-transparent hover:border-gray-500 focus:border-gray-500 focus:outline-none focus:shadow-outline-gray"
+              >
                 <TwitterIcon className="w-4 h-4 mr-2" aria-hidden="true" />
                 Twitter
-              </Button>
+              </button>
 
               <p className="mt-4">
                 <Link
                   className="text-sm font-medium text-purple-600 dark:text-purple-400 hover:underline"
-                  to="/forgot-password"
+                  to="/"
                 >
                   Forgot your password?
                 </Link>
@@ -64,7 +82,7 @@ const Login: React.FC = () => {
               <p className="mt-1">
                 <Link
                   className="text-sm font-medium text-purple-600 dark:text-purple-400 hover:underline"
-                  to="/create-account"
+                  to="/"
                 >
                   Create account
                 </Link>
