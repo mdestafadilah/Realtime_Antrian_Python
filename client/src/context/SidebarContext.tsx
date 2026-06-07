@@ -1,4 +1,5 @@
-import React, { useState, useMemo, ReactNode } from 'react';
+import React, { useState, useMemo } from 'react';
+import type { ReactNode } from 'react';
 
 type SidebarContextValue = {
   isSidebarOpen: boolean;

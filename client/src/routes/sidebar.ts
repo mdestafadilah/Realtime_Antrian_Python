@@ -2,11 +2,13 @@
  * ⚠ These are used just to render the Sidebar!
  * You can include any link here, local or external.
  *
- * If you're looking to actual Router routes, go to
- * `routes/appRoutes.ts`
+ * The leading `-` filename prefix tells TanStack Router to skip this file
+ * (per `routeFileIgnorePrefix`), since it's a config module, not a route.
  *
- * The `icon` value matches a key in the lucide-react icon map used by
- * SidebarContent / SidebarSubmenu.
+ * For actual Router routes, see TanStack file-based routes
+ * (`__root.tsx`, `index.tsx`, etc.).
+ *
+ * The `icon` value matches a named export from `src/icons/index.ts`.
  */
 
 export type SidebarSubmenuRoute = {
