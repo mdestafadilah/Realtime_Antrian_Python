@@ -41,9 +41,10 @@ Realtime_Antrian_Python/
     │   ├── db.py               # Database manager (MySQL connection helper)
     │   ├── layanan.py          # Layanan CRUD REST API
     │   ├── loket.py            # Loket CRUD REST API
+    │   ├── groups.py           # Groups CRUD REST API
+    │   ├── users.py            # Users CRUD REST API
     │   ├── antrian.py          # Transaksi antrian harian [TODO]
-    │   ├── panggilan.py        # Logika panggilan [TODO]
-    │   └── users.py            # User management [TODO]
+    │   └── panggilan.py        # Logika panggilan [TODO]
     ├── requirements.txt        # PIP dependencies
     └── setup.py                # Package installer
 ```
@@ -82,6 +83,41 @@ Modul `loket` mengelola data meja/loket counter petugas panggilan, status keakti
 | `PUT`    | `/api/loket/status/{id}` | Update status buka/tutup loket                                                 |
 | `PUT`    | `/api/loket/users/{id}`  | Sinkronisasi/replace-all penugasan user untuk loket                            |
 | `DELETE` | `/api/loket/{id}`        | Menghapus loket                                                                |
+
+---
+
+## Modul Users — `/api/users`
+
+Modul `users` menangani data pengguna/petugas (User Management), hashing password dengan bcrypt, dan relasi penugasan group.
+
+### Daftar Endpoint
+
+| Method   | Endpoint                     | Keterangan                                                                     |
+| -------- | ---------------------------- | ------------------------------------------------------------------------------ |
+| `GET`    | `/api/users`                 | Mengambil list semua user beserta details group masing-masing                  |
+| `GET`    | `/api/users/{id}`            | Mengambil rincian detail satu user beserta details group                       |
+| `POST`   | `/api/users`                 | Mendaftarkan user baru (IP otomatis terekam, password dihash, & assign groups) |
+| `PUT`    | `/api/users/{id}`            | Update detail user (partial update data user & sinkronisasi group)            |
+| `PUT`    | `/api/users/activate/{id}`   | Mengaktifkan status keaktifan user (`active = 1`)                              |
+| `PUT`    | `/api/users/deactivate/{id}` | Menonaktifkan status keaktifan user (`active = 0`)                            |
+| `DELETE` | `/api/users/{id}`            | Menghapus user                                                                 |
+
+---
+
+## Modul Groups — `/api/groups`
+
+Modul `groups` menangani hak akses / role (Group Management via Ion Auth) beserta warna label background display TV.
+
+### Daftar Endpoint
+
+| Method   | Endpoint                 | Keterangan                                                                     |
+| -------- | ------------------------ | ------------------------------------------------------------------------------ |
+| `GET`    | `/api/groups`             | Mengambil list semua groups                                                    |
+| `GET`    | `/api/groups/{id}`        | Mengambil rincian detail satu group                                            |
+| `GET`    | `/api/groups/users/{id}`  | Mengambil daftar user yang termasuk ke dalam group tersebut                    |
+| `POST`   | `/api/groups`             | Membuat group baru (nama group hanya alfanumerik & dash/underscore)            |
+| `PUT`    | `/api/groups/{id}`        | Update data group (nama group `admin` dilindungi dari pengubahan/rename)       |
+| `DELETE` | `/api/groups/{id}`        | Menghapus group (group `admin` dilindungi dari penghapusan)                   |
 
 ---
 
@@ -135,9 +171,11 @@ Modul `loket` mengelola data meja/loket counter petugas panggilan, status keakti
 ## Pengembangan / Roadmap Status
 
 - [x] Inisialisasi Project (Setup FastAPI & React template)
-- [x] Instalasi Driver & Integrasi Database MySQL
+- [x] Driver & Database Integration (MySQL via PyMySQL & Cryptography)
 - [x] Implementasi Modul `layanan` (FastAPI Router + Pydantic validation + PyMySQL)
 - [x] Implementasi Modul `loket` (FastAPI Router + Pivot Users Sync + PyMySQL)
+- [x] Implementasi Modul `users` (FastAPI Router + Bcrypt Hash + Groups Sync)
+- [x] Implementasi Modul `groups` (FastAPI Router + Admin Protections)
 - [ ] Implementasi Modul `antrian`
 - [ ] Integrasi Realtime WebSocket (Socket.IO)
 - [ ] Integrasi Audio Voice Generator (`edge-tts`/`piper-tts`)

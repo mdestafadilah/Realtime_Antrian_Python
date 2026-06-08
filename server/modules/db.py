@@ -136,6 +136,30 @@ def init_db():
               CONSTRAINT `fk_loket_user_user` FOREIGN KEY (`id_user`) REFERENCES `users`(`id`) ON DELETE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
             """)
+            
+            cursor.execute("""
+            CREATE TABLE IF NOT EXISTS `groups` (
+              `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT,
+              `name` varchar(20) NOT NULL,
+              `description` varchar(100) NOT NULL,
+              `bgcolor` char(7) NOT NULL DEFAULT '#607D8B',
+              PRIMARY KEY (`id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            """)
+            
+            cursor.execute("""
+            CREATE TABLE IF NOT EXISTS `users_groups` (
+              `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+              `user_id` int(11) unsigned NOT NULL,
+              `group_id` mediumint(8) unsigned NOT NULL,
+              PRIMARY KEY (`id`),
+              UNIQUE KEY `uc_users_groups` (`user_id`,`group_id`),
+              KEY `fk_users_groups_users1_idx` (`user_id`),
+              KEY `fk_users_groups_groups1_idx` (`group_id`),
+              CONSTRAINT `fk_users_groups_groups1` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+              CONSTRAINT `fk_users_groups_users1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+            """)
     finally:
         conn.close()
 

@@ -10,3 +10,4 @@ requests==2.32.3
 slowapi==0.1.9
 pymysql
 cryptography
+bcrypt
