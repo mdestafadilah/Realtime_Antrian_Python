@@ -97,6 +97,45 @@ def init_db():
               UNIQUE KEY `kode_huruf` (`kode_huruf`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
             """)
+            
+            cursor.execute("""
+            CREATE TABLE IF NOT EXISTS `users` (
+              `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+              `username` varchar(100) NOT NULL,
+              `password` varchar(255) NOT NULL,
+              `email` varchar(100) NOT NULL,
+              `first_name` varchar(50) DEFAULT NULL,
+              `last_name` varchar(50) DEFAULT NULL,
+              `active` tinyint(1) unsigned DEFAULT NULL,
+              PRIMARY KEY (`id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            """)
+            
+            cursor.execute("""
+            CREATE TABLE IF NOT EXISTS `loket` (
+              `id` int(11) NOT NULL AUTO_INCREMENT,
+              `id_layanan` int(11) NOT NULL COMMENT 'Loket ini melayani layanan apa?',
+              `nama_loket` varchar(50) NOT NULL COMMENT 'Misal: Loket 01, Kasir 01',
+              `status_buka` enum('buka','tutup') DEFAULT 'tutup',
+              `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+              `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+              PRIMARY KEY (`id`),
+              KEY `id_layanan` (`id_layanan`),
+              CONSTRAINT `loket_ibfk_1` FOREIGN KEY (`id_layanan`) REFERENCES `layanan` (`id`) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+            """)
+            
+            cursor.execute("""
+            CREATE TABLE IF NOT EXISTS `loket_user` (
+              `id` int(11) NOT NULL AUTO_INCREMENT,
+              `id_loket` int(11) NOT NULL,
+              `id_user` int(11) unsigned NOT NULL,
+              PRIMARY KEY (`id`),
+              UNIQUE KEY `unique_loket_user` (`id_loket`, `id_user`),
+              CONSTRAINT `fk_loket_user_loket` FOREIGN KEY (`id_loket`) REFERENCES `loket`(`id`) ON DELETE CASCADE,
+              CONSTRAINT `fk_loket_user_user` FOREIGN KEY (`id_user`) REFERENCES `users`(`id`) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            """)
     finally:
         conn.close()
 

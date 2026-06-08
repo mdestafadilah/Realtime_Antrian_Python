@@ -40,7 +40,7 @@ Realtime_Antrian_Python/
     ├── modules/                # Domain modular backend
     │   ├── db.py               # Database manager (MySQL connection helper)
     │   ├── layanan.py          # Layanan CRUD REST API
-    │   ├── loket.py            # Loket API (petugas counter) [TODO]
+    │   ├── loket.py            # Loket CRUD REST API
     │   ├── antrian.py          # Transaksi antrian harian [TODO]
     │   ├── panggilan.py        # Logika panggilan [TODO]
     │   └── users.py            # User management [TODO]
@@ -63,6 +63,25 @@ Modul `layanan` menangani data master jenis layanan (kategori antrian) beserta p
 | `POST`   | `/api/layanan`       | Membuat layanan baru. Body: `kode_huruf`, `nama_layanan`, `keterangan?` |
 | `PUT`    | `/api/layanan/{id}`  | Update sebagian field layanan                                          |
 | `DELETE` | `/api/layanan/{id}`  | Menghapus layanan                                                      |
+
+---
+
+## Modul Loket — `/api/loket`
+
+Modul `loket` mengelola data meja/loket counter petugas panggilan, status keaktifan buka/tutup loket, serta penugasan user ke loket tertentu.
+
+### Daftar Endpoint
+
+| Method   | Endpoint                 | Keterangan                                                                     |
+| -------- | ------------------------ | ------------------------------------------------------------------------------ |
+| `GET`    | `/api/loket`             | Mengambil list semua loket (termasuk relasi layanan & user ter-assign)         |
+| `GET`    | `/api/loket/{id}`        | Mengambil rincian detail satu loket beserta user ter-assign                    |
+| `GET`    | `/api/loket/buka`        | List loket yang sedang buka (opsional: `?with_last=1` untuk nomor antrian hari ini) |
+| `GET`    | `/api/loket/users/{id}`  | Mendapatkan daftar user yang ter-assign ke loket                               |
+| `POST`   | `/api/loket`             | Membuat loket baru (dapat menyertakan array user IDs `id_users`)              |
+| `PUT`    | `/api/loket/status/{id}` | Update status buka/tutup loket                                                 |
+| `PUT`    | `/api/loket/users/{id}`  | Sinkronisasi/replace-all penugasan user untuk loket                            |
+| `DELETE` | `/api/loket/{id}`        | Menghapus loket                                                                |
 
 ---
 
@@ -118,7 +137,7 @@ Modul `layanan` menangani data master jenis layanan (kategori antrian) beserta p
 - [x] Inisialisasi Project (Setup FastAPI & React template)
 - [x] Instalasi Driver & Integrasi Database MySQL
 - [x] Implementasi Modul `layanan` (FastAPI Router + Pydantic validation + PyMySQL)
-- [ ] Implementasi Modul `loket`
+- [x] Implementasi Modul `loket` (FastAPI Router + Pivot Users Sync + PyMySQL)
 - [ ] Implementasi Modul `antrian`
 - [ ] Integrasi Realtime WebSocket (Socket.IO)
 - [ ] Integrasi Audio Voice Generator (`edge-tts`/`piper-tts`)
