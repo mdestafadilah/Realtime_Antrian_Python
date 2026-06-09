@@ -9,11 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PenggunaRouteImport } from './routes/pengguna'
 import { Route as LoketRouteImport } from './routes/loket'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LayananRouteImport } from './routes/layanan'
+import { Route as GrupKeamananRouteImport } from './routes/grup-keamanan'
 import { Route as IndexRouteImport } from './routes/index'
 
+const PenggunaRoute = PenggunaRouteImport.update({
+  id: '/pengguna',
+  path: '/pengguna',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoketRoute = LoketRouteImport.update({
   id: '/loket',
   path: '/loket',
@@ -29,6 +36,11 @@ const LayananRoute = LayananRouteImport.update({
   path: '/layanan',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GrupKeamananRoute = GrupKeamananRouteImport.update({
+  id: '/grup-keamanan',
+  path: '/grup-keamanan',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -37,40 +49,68 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/grup-keamanan': typeof GrupKeamananRoute
   '/layanan': typeof LayananRoute
   '/login': typeof LoginRoute
   '/loket': typeof LoketRoute
+  '/pengguna': typeof PenggunaRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/grup-keamanan': typeof GrupKeamananRoute
   '/layanan': typeof LayananRoute
   '/login': typeof LoginRoute
   '/loket': typeof LoketRoute
+  '/pengguna': typeof PenggunaRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/grup-keamanan': typeof GrupKeamananRoute
   '/layanan': typeof LayananRoute
   '/login': typeof LoginRoute
   '/loket': typeof LoketRoute
+  '/pengguna': typeof PenggunaRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/layanan' | '/login' | '/loket'
+  fullPaths:
+    | '/'
+    | '/grup-keamanan'
+    | '/layanan'
+    | '/login'
+    | '/loket'
+    | '/pengguna'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/layanan' | '/login' | '/loket'
-  id: '__root__' | '/' | '/layanan' | '/login' | '/loket'
+  to: '/' | '/grup-keamanan' | '/layanan' | '/login' | '/loket' | '/pengguna'
+  id:
+    | '__root__'
+    | '/'
+    | '/grup-keamanan'
+    | '/layanan'
+    | '/login'
+    | '/loket'
+    | '/pengguna'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  GrupKeamananRoute: typeof GrupKeamananRoute
   LayananRoute: typeof LayananRoute
   LoginRoute: typeof LoginRoute
   LoketRoute: typeof LoketRoute
+  PenggunaRoute: typeof PenggunaRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/pengguna': {
+      id: '/pengguna'
+      path: '/pengguna'
+      fullPath: '/pengguna'
+      preLoaderRoute: typeof PenggunaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/loket': {
       id: '/loket'
       path: '/loket'
@@ -92,6 +132,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayananRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/grup-keamanan': {
+      id: '/grup-keamanan'
+      path: '/grup-keamanan'
+      fullPath: '/grup-keamanan'
+      preLoaderRoute: typeof GrupKeamananRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -104,9 +151,11 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  GrupKeamananRoute: GrupKeamananRoute,
   LayananRoute: LayananRoute,
   LoginRoute: LoginRoute,
   LoketRoute: LoketRoute,
+  PenggunaRoute: PenggunaRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
