@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PenggunaRouteImport } from './routes/pengguna'
+import { Route as PanggilanRouteImport } from './routes/panggilan'
 import { Route as LoketRouteImport } from './routes/loket'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LayananRouteImport } from './routes/layanan'
@@ -20,6 +21,11 @@ import { Route as IndexRouteImport } from './routes/index'
 const PenggunaRoute = PenggunaRouteImport.update({
   id: '/pengguna',
   path: '/pengguna',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PanggilanRoute = PanggilanRouteImport.update({
+  id: '/panggilan',
+  path: '/panggilan',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoketRoute = LoketRouteImport.update({
@@ -60,6 +66,7 @@ export interface FileRoutesByFullPath {
   '/layanan': typeof LayananRoute
   '/login': typeof LoginRoute
   '/loket': typeof LoketRoute
+  '/panggilan': typeof PanggilanRoute
   '/pengguna': typeof PenggunaRoute
 }
 export interface FileRoutesByTo {
@@ -69,6 +76,7 @@ export interface FileRoutesByTo {
   '/layanan': typeof LayananRoute
   '/login': typeof LoginRoute
   '/loket': typeof LoketRoute
+  '/panggilan': typeof PanggilanRoute
   '/pengguna': typeof PenggunaRoute
 }
 export interface FileRoutesById {
@@ -79,6 +87,7 @@ export interface FileRoutesById {
   '/layanan': typeof LayananRoute
   '/login': typeof LoginRoute
   '/loket': typeof LoketRoute
+  '/panggilan': typeof PanggilanRoute
   '/pengguna': typeof PenggunaRoute
 }
 export interface FileRouteTypes {
@@ -90,6 +99,7 @@ export interface FileRouteTypes {
     | '/layanan'
     | '/login'
     | '/loket'
+    | '/panggilan'
     | '/pengguna'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -99,6 +109,7 @@ export interface FileRouteTypes {
     | '/layanan'
     | '/login'
     | '/loket'
+    | '/panggilan'
     | '/pengguna'
   id:
     | '__root__'
@@ -108,6 +119,7 @@ export interface FileRouteTypes {
     | '/layanan'
     | '/login'
     | '/loket'
+    | '/panggilan'
     | '/pengguna'
   fileRoutesById: FileRoutesById
 }
@@ -118,6 +130,7 @@ export interface RootRouteChildren {
   LayananRoute: typeof LayananRoute
   LoginRoute: typeof LoginRoute
   LoketRoute: typeof LoketRoute
+  PanggilanRoute: typeof PanggilanRoute
   PenggunaRoute: typeof PenggunaRoute
 }
 
@@ -128,6 +141,13 @@ declare module '@tanstack/react-router' {
       path: '/pengguna'
       fullPath: '/pengguna'
       preLoaderRoute: typeof PenggunaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/panggilan': {
+      id: '/panggilan'
+      path: '/panggilan'
+      fullPath: '/panggilan'
+      preLoaderRoute: typeof PanggilanRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/loket': {
@@ -182,6 +202,7 @@ const rootRouteChildren: RootRouteChildren = {
   LayananRoute: LayananRoute,
   LoginRoute: LoginRoute,
   LoketRoute: LoketRoute,
+  PanggilanRoute: PanggilanRoute,
   PenggunaRoute: PenggunaRoute,
 }
 export const routeTree = rootRouteImport
