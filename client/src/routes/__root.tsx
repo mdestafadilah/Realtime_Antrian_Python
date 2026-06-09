@@ -1,4 +1,4 @@
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
+import { HeadContent, Outlet, Scripts, createRootRoute, useRouterState } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 
@@ -32,6 +32,9 @@ export const Route = createRootRoute({
 })
 
 function RootDocument({ children: _children }: { children: React.ReactNode }) {
+  const pathname = useRouterState({ select: (s) => s.location.pathname })
+  const isAuthRoute = pathname === '/login'
+
   return (
     <html lang="en">
       <head>
@@ -39,9 +42,7 @@ function RootDocument({ children: _children }: { children: React.ReactNode }) {
       </head>
       <body>
         <ThemeProvider>
-          <SidebarProvider>
-            <Layout />
-          </SidebarProvider>
+          <SidebarProvider>{isAuthRoute ? <Outlet /> : <Layout />}</SidebarProvider>
         </ThemeProvider>
         <TanStackDevtools
           config={{
