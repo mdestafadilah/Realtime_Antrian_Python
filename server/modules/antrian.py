@@ -4,7 +4,7 @@ from typing import Optional
 from fastapi import APIRouter, Response, Request, status
 from pydantic import BaseModel, Field
 from enum import Enum
-from .db import get_db_conn
+from database.dbmysql import get_db_conn
 
 # Enum for queue status
 class StatusAntrianEnum(str, Enum):

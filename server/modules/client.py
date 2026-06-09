@@ -2,7 +2,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Response, status
 from pydantic import BaseModel, Field
 from enum import Enum
-from .db import get_db_conn
+from database.dbmysql import get_db_conn
 
 # Enum for is_active field
 class IsActiveEnum(str, Enum):

@@ -1,7 +1,7 @@
 from typing import Optional
 from fastapi import APIRouter, Response, status
 from pydantic import BaseModel, Field
-from .db import get_db_conn
+from database.dbmysql import get_db_conn
 
 # Pydantic schemas for request validation
 class GroupCreate(BaseModel):

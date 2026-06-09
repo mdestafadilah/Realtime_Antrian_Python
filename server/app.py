@@ -111,7 +111,7 @@ def root():
 @app.get("/health", tags=["Health"])
 def health_check():
     """Endpoint untuk Docker healthcheck atau monitoring."""
-    from modules.db import get_db_conn
+    from database.dbmysql import get_db_conn
     try:
         conn = get_db_conn()
         conn.close()

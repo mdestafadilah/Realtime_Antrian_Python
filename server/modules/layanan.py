@@ -2,7 +2,7 @@ from typing import Optional
 from fastapi import APIRouter, Response, status
 from pydantic import BaseModel, Field
 from enum import Enum
-from .db import get_db_conn
+from database.dbmysql import get_db_conn
 
 # Enum for show_welcome field
 class ShowWelcomeEnum(str, Enum):
