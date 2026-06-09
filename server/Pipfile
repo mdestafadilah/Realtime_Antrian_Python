@@ -17,6 +17,12 @@ python-engineio = "*"
 pymysql = "*"
 cryptography = "*"
 bcrypt = "*"
+edge-tts = ">=7.2.0"
+piper-tts = ">=1.2.0"
+aiofiles = ">=24.1.0"
+requests = ">=2.32.3"
+slowapi = ">=0.1.9"
+python-multipart = "*"
 
 [test]
 pytest = ">=6.0.1"

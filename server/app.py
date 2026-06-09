@@ -22,15 +22,17 @@ from modules.layanan import router as layanan_router
 from modules.loket import router as loket_router
 from modules.users import router as users_router
 from modules.groups import router as groups_router
+from modules.client import router as client_router
+from modules.tts import router as tts_router, setup_tts
 
 # ---------------------------------------------------------------------------
 # App configuration
 # ---------------------------------------------------------------------------
-APP_TITLE = "Realtime Antrian API"
-APP_VERSION = "0.2.1"
+APP_TITLE = "Realtime Antrian API - Python & ReactJS"
+APP_VERSION = "0.3.0"
 APP_DESCRIPTION = (
     "REST API + Socket.IO backend untuk sistem antrian rumah sakit.\n\n"
-    "**Modul:** Antrian · Layanan · Loket · Users · Groups"
+    "**Modul:** Antrian · Layanan · Loket · Users · Groups · Client · TTS"
 )
 
 app = FastAPI(
@@ -77,6 +79,11 @@ async def handle_message(sid, data):
     await sio_manager.emit("message", data)
 
 # ---------------------------------------------------------------------------
+# TTS — pasang slowapi limiter & exception handler sebelum register router
+# ---------------------------------------------------------------------------
+setup_tts(app)
+
+# ---------------------------------------------------------------------------
 # Register API routers
 # ---------------------------------------------------------------------------
 app.include_router(antrian_router)
@@ -84,6 +91,8 @@ app.include_router(layanan_router)
 app.include_router(loket_router)
 app.include_router(users_router)
 app.include_router(groups_router)
+app.include_router(client_router)
+app.include_router(tts_router)
 
 # ---------------------------------------------------------------------------
 # Health-check endpoint

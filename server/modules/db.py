@@ -162,6 +162,30 @@ def init_db():
             """)
             
             cursor.execute("""
+            CREATE TABLE IF NOT EXISTS `client` (
+              `id` int(11) NOT NULL AUTO_INCREMENT,
+              `nama_client` varchar(50) NOT NULL,
+              `is_active` enum('ya','tidak') DEFAULT 'tidak',
+              `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+              `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+              PRIMARY KEY (`id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+            """)
+
+            cursor.execute("""
+            CREATE TABLE IF NOT EXISTS `client_loket` (
+              `id` int(11) NOT NULL AUTO_INCREMENT,
+              `id_client` int(11) NOT NULL,
+              `id_loket` int(11) NOT NULL,
+              PRIMARY KEY (`id`),
+              UNIQUE KEY `unique_client_loket` (`id_client`,`id_loket`),
+              KEY `idx_client_loket_loket` (`id_loket`),
+              CONSTRAINT `fk_client_loket_client` FOREIGN KEY (`id_client`) REFERENCES `client` (`id`) ON DELETE CASCADE,
+              CONSTRAINT `fk_client_loket_loket` FOREIGN KEY (`id_loket`) REFERENCES `loket` (`id`) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+            """)
+
+            cursor.execute("""
             CREATE TABLE IF NOT EXISTS `antrian` (
               `id` bigint(20) NOT NULL AUTO_INCREMENT,
               `tanggal` date NOT NULL COMMENT 'Tanggal antrian terjadi (untuk reset harian)',
