@@ -1,4 +1,5 @@
 import React, { useContext, useState } from 'react';
+import { useNavigate } from '@tanstack/react-router';
 import { SidebarContext } from '../context/SidebarContext';
 import { ThemeContext } from '../context/ThemeContext';
 import {
@@ -21,12 +22,18 @@ type ThemeContextValue = {
   toggleTheme: () => void;
 };
 
+const API_URL =
+  (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') ||
+  'http://localhost:8000';
+
 const Header: React.FC = () => {
   const { theme, toggleTheme } = useContext(ThemeContext) as ThemeContextValue;
   const { toggleSidebar } = useContext(SidebarContext) as SidebarContextValue;
+  const navigate = useNavigate();
 
   const [isNotificationsMenuOpen, setIsNotificationsMenuOpen] = useState<boolean>(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState<boolean>(false);
+  const [isLoggingOut, setIsLoggingOut] = useState<boolean>(false);
 
   function handleNotificationsClick(): void {
     setIsNotificationsMenuOpen(!isNotificationsMenuOpen);
@@ -34,6 +41,31 @@ const Header: React.FC = () => {
 
   function handleProfileClick(): void {
     setIsProfileMenuOpen(!isProfileMenuOpen);
+  }
+
+  async function handleLogout(): Promise<void> {
+    if (isLoggingOut) return;
+    setIsLoggingOut(true);
+    const token = localStorage.getItem('auth_token');
+
+    // Best-effort: revoke token di server. Kalau gagal/network error,
+    // tetap clear state lokal — user tetap dianggap logout.
+    if (token) {
+      try {
+        await fetch(`${API_URL}/api/auth/logout`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } catch {
+        // diabaikan
+      }
+    }
+
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('auth_user');
+    setIsProfileMenuOpen(false);
+    setIsLoggingOut(false);
+    navigate({ to: '/login', replace: true });
   }
 
   return (
@@ -170,11 +202,12 @@ const Header: React.FC = () => {
                   <li>
                     <button
                       type="button"
-                      onClick={(): void => alert('Log out!')}
-                      className="inline-flex items-center w-full px-2 py-1 text-sm font-medium transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                      onClick={handleLogout}
+                      disabled={isLoggingOut}
+                      className="inline-flex items-center w-full px-2 py-1 text-sm font-medium transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200 disabled:opacity-60 disabled:cursor-not-allowed"
                     >
                       <OutlineLogoutIcon className="w-4 h-4 mr-3" aria-hidden="true" />
-                      <span>Log out</span>
+                      <span>{isLoggingOut ? 'Logging out...' : 'Log out'}</span>
                     </button>
                   </li>
                 </ul>
