@@ -98,6 +98,7 @@ const DisplayPage: FC = () => {
     return localStorage.getItem(STORAGE_AUDIO) === '1';
   });
   const [socketConnected, setSocketConnected] = useState(false);
+  const [ttsError, setTtsError] = useState<string | null>(null);
 
   // Tracking panggilan yang sudah diumumkan (id_loket -> waktu_panggil)
   const announcedRef = useRef<Map<number, string>>(new Map());
@@ -106,6 +107,8 @@ const DisplayPage: FC = () => {
   // Antrian audio URL untuk diputar berurutan
   const audioQueueRef = useRef<string[]>([]);
   const audioPlayingRef = useRef(false);
+  // Satu HTMLAudioElement reusable — Safari/Chrome lebih ramah kalau pakai element yang sama
+  const audioElRef = useRef<HTMLAudioElement | null>(null);
 
   const fetchClients = async () => {
     try {
@@ -219,6 +222,16 @@ const DisplayPage: FC = () => {
   }, [audioEnabled]);
 
   // --- TTS: generate audio dari teks lewat /api/tts, lalu antrian-kan untuk diputar ---
+  // Lazy-init satu element audio yang dipakai ulang. Browser (terutama Safari) lebih ramah
+  // ke element yang sudah pernah .play()-ed di user gesture daripada `new Audio(url)` tiap kali.
+  const getAudioEl = (): HTMLAudioElement => {
+    if (!audioElRef.current) {
+      audioElRef.current = new Audio();
+      audioElRef.current.preload = 'auto';
+    }
+    return audioElRef.current;
+  };
+
   const playNext = () => {
     const url = audioQueueRef.current.shift();
     if (!url) {
@@ -226,12 +239,17 @@ const DisplayPage: FC = () => {
       return;
     }
     audioPlayingRef.current = true;
-    const a = new Audio(url);
+    const a = getAudioEl();
     a.onended = playNext;
-    a.onerror = playNext;
+    a.onerror = () => {
+      setTtsError(`Gagal memutar audio: ${url}`);
+      playNext();
+    };
+    a.src = url;
     a.play().catch((err) => {
-      console.warn('[TTS] play() ditolak browser:', err);
-      // Autoplay biasanya ter-block sampai user interaksi.
+      setTtsError(
+        `Browser memblokir autoplay (${err?.name || 'error'}). Klik "🔇 Aktifkan Suara" sekali untuk membuka.`,
+      );
       audioPlayingRef.current = false;
     });
   };
@@ -250,16 +268,18 @@ const DisplayPage: FC = () => {
       });
       const json: TTSResponse = await res.json();
       if (!res.ok || !json.status || !json.data?.audio_url) {
-        console.warn('[TTS] generate gagal:', json.message);
+        const msg = json.message || `HTTP ${res.status}`;
+        setTtsError(`TTS gagal: ${msg}`);
         return;
       }
       const audioUrl = json.data.audio_url.startsWith('http')
         ? json.data.audio_url
         : `${API_URL}${json.data.audio_url}`;
       audioQueueRef.current.push(audioUrl);
+      setTtsError(null);
       if (!audioPlayingRef.current) playNext();
     } catch (e) {
-      console.error('[TTS] error:', e);
+      setTtsError(`TTS error: ${e instanceof Error ? e.message : String(e)}`);
     }
   };
 
@@ -268,16 +288,33 @@ const DisplayPage: FC = () => {
       setAudioEnabled(false);
       return;
     }
-    // Unlock browser autoplay dengan memutar audio singkat dari interaksi user
+    // Unlock browser autoplay dalam user-gesture: play element kosong dengan volume 0
+    // (cukup untuk Chrome/Firefox; Safari kadang minta src valid).
     try {
-      const silent = new Audio(
-        'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=',
+      const a = getAudioEl();
+      a.volume = 0;
+      // 1-sample silent WAV (44 bytes) — semua browser bisa decode
+      a.src =
+        'data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQIAAAAAAA==';
+      await a.play();
+      a.pause();
+      a.currentTime = 0;
+      a.volume = 1;
+      setTtsError(null);
+      setAudioEnabled(true);
+    } catch (err) {
+      setTtsError(
+        `Tidak bisa unlock audio: ${err instanceof Error ? err.message : String(err)}. Coba klik di area lain dulu lalu klik tombol ini lagi.`,
       );
-      await silent.play().catch(() => {});
-    } catch {
-      // ignore
     }
-    setAudioEnabled(true);
+  };
+
+  const handleTestTTS = async () => {
+    if (!audioEnabled) {
+      setTtsError('Aktifkan suara dulu (klik tombol kiri).');
+      return;
+    }
+    await enqueueTTS('Tes suara, ini panggilan antrian nomor A 1, silakan menuju loket 1.');
   };
 
   // Track fullscreen state
@@ -379,10 +416,19 @@ const DisplayPage: FC = () => {
               'px-3 py-2 text-sm font-medium border rounded-lg ' +
               (audioEnabled
                 ? 'text-green-700 bg-green-50 border-green-200 hover:bg-green-100 dark:text-green-200 dark:bg-green-900/30 dark:border-green-800'
-                : 'text-gray-700 bg-white border-gray-300 hover:border-gray-500 dark:text-gray-200 dark:bg-gray-700 dark:border-gray-600')
+                : 'text-white bg-purple-600 border-purple-600 hover:bg-purple-700 animate-pulse')
             }
           >
             {audioEnabled ? '🔊 Suara ON' : '🔇 Aktifkan Suara'}
+          </button>
+          <button
+            type="button"
+            onClick={handleTestTTS}
+            disabled={!audioEnabled}
+            title="Tes panggilan TTS"
+            className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:border-gray-500 dark:text-gray-200 dark:bg-gray-700 dark:border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            🔔 Tes Suara
           </button>
           <button
             type="button"
@@ -428,6 +474,33 @@ const DisplayPage: FC = () => {
           className="mb-4 px-3 py-2 text-sm text-red-700 bg-red-100 border border-red-200 rounded-md dark:bg-red-900/30 dark:text-red-300 dark:border-red-800"
         >
           {error}
+        </div>
+      )}
+
+      {ttsError && (
+        <div
+          role="alert"
+          className="flex items-start justify-between mb-4 px-3 py-2 text-sm text-yellow-800 bg-yellow-100 border border-yellow-200 rounded-md dark:bg-yellow-900/30 dark:text-yellow-200 dark:border-yellow-800"
+        >
+          <span>🔉 {ttsError}</span>
+          <button
+            type="button"
+            onClick={() => setTtsError(null)}
+            className="ml-2 text-xs underline hover:no-underline"
+          >
+            tutup
+          </button>
+        </div>
+      )}
+
+      {!audioEnabled && selectedClient && (
+        <div
+          role="status"
+          className="mb-4 px-3 py-2 text-sm text-purple-800 bg-purple-50 border border-purple-200 rounded-md dark:bg-purple-900/30 dark:text-purple-200 dark:border-purple-800"
+        >
+          💡 Suara TTS belum aktif. Klik tombol{' '}
+          <strong>🔇 Aktifkan Suara</strong> di kanan atas dulu (sekali per session) supaya
+          panggilan otomatis berbunyi.
         </div>
       )}
 
