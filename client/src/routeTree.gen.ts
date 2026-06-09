@@ -14,6 +14,7 @@ import { Route as LoketRouteImport } from './routes/loket'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LayananRouteImport } from './routes/layanan'
 import { Route as GrupKeamananRouteImport } from './routes/grup-keamanan'
+import { Route as AntrianRouteImport } from './routes/antrian'
 import { Route as IndexRouteImport } from './routes/index'
 
 const PenggunaRoute = PenggunaRouteImport.update({
@@ -41,6 +42,11 @@ const GrupKeamananRoute = GrupKeamananRouteImport.update({
   path: '/grup-keamanan',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AntrianRoute = AntrianRouteImport.update({
+  id: '/antrian',
+  path: '/antrian',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -49,6 +55,7 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/antrian': typeof AntrianRoute
   '/grup-keamanan': typeof GrupKeamananRoute
   '/layanan': typeof LayananRoute
   '/login': typeof LoginRoute
@@ -57,6 +64,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/antrian': typeof AntrianRoute
   '/grup-keamanan': typeof GrupKeamananRoute
   '/layanan': typeof LayananRoute
   '/login': typeof LoginRoute
@@ -66,6 +74,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/antrian': typeof AntrianRoute
   '/grup-keamanan': typeof GrupKeamananRoute
   '/layanan': typeof LayananRoute
   '/login': typeof LoginRoute
@@ -76,16 +85,25 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/antrian'
     | '/grup-keamanan'
     | '/layanan'
     | '/login'
     | '/loket'
     | '/pengguna'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/grup-keamanan' | '/layanan' | '/login' | '/loket' | '/pengguna'
+  to:
+    | '/'
+    | '/antrian'
+    | '/grup-keamanan'
+    | '/layanan'
+    | '/login'
+    | '/loket'
+    | '/pengguna'
   id:
     | '__root__'
     | '/'
+    | '/antrian'
     | '/grup-keamanan'
     | '/layanan'
     | '/login'
@@ -95,6 +113,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AntrianRoute: typeof AntrianRoute
   GrupKeamananRoute: typeof GrupKeamananRoute
   LayananRoute: typeof LayananRoute
   LoginRoute: typeof LoginRoute
@@ -139,6 +158,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GrupKeamananRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/antrian': {
+      id: '/antrian'
+      path: '/antrian'
+      fullPath: '/antrian'
+      preLoaderRoute: typeof AntrianRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -151,6 +177,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AntrianRoute: AntrianRoute,
   GrupKeamananRoute: GrupKeamananRoute,
   LayananRoute: LayananRoute,
   LoginRoute: LoginRoute,
