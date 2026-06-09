@@ -18,6 +18,7 @@ if _server_dir not in sys.path:
 # Import routers from modules
 # ---------------------------------------------------------------------------
 from modules.antrian import router as antrian_router
+from modules.auth import router as auth_router
 from modules.layanan import router as layanan_router
 from modules.loket import router as loket_router
 from modules.users import router as users_router
@@ -33,7 +34,7 @@ APP_TITLE = "Realtime Antrian API - Python & ReactJS"
 APP_VERSION = "0.3.0"
 APP_DESCRIPTION = (
     "REST API + Socket.IO backend untuk sistem antrian rumah sakit.\n\n"
-    "**Modul:** Antrian · Layanan · Loket · Users · Groups · Client · Panggilan · TTS"
+    "**Modul:** Auth · Antrian · Layanan · Loket · Users · Groups · Client · Panggilan · TTS"
 )
 
 app = FastAPI(
@@ -87,6 +88,7 @@ setup_tts(app)
 # ---------------------------------------------------------------------------
 # Register API routers
 # ---------------------------------------------------------------------------
+app.include_router(auth_router)
 app.include_router(antrian_router)
 app.include_router(layanan_router)
 app.include_router(loket_router)

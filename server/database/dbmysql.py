@@ -186,6 +186,18 @@ def init_db():
             """)
 
             cursor.execute("""
+            CREATE TABLE IF NOT EXISTS `auth_revoked_tokens` (
+              `jti` varchar(64) NOT NULL COMMENT 'JWT ID — token unique identifier',
+              `user_id` int(11) unsigned NOT NULL,
+              `revoked_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+              `expires_at` datetime NOT NULL COMMENT 'Original JWT exp — row bisa dihapus setelah waktu ini',
+              PRIMARY KEY (`jti`),
+              KEY `idx_user_id` (`user_id`),
+              KEY `idx_expires_at` (`expires_at`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+            """)
+
+            cursor.execute("""
             CREATE TABLE IF NOT EXISTS `antrian` (
               `id` bigint(20) NOT NULL AUTO_INCREMENT,
               `tanggal` date NOT NULL COMMENT 'Tanggal antrian terjadi (untuk reset harian)',
