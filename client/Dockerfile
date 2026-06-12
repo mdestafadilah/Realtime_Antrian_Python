@@ -1,5 +1,5 @@
 # ---- Build stage ----
-FROM node:22-alpine AS build
+FROM node:20-alpine AS build
 WORKDIR /app
 
 COPY package*.json ./
@@ -8,24 +8,19 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-# ---- Production stage (nginx) ----
-FROM nginx:alpine
+# ---- Production SSR stage ----
+FROM node:20-alpine
+WORKDIR /app
 
-# Install shadow untuk chown/chmod (diperlukan di alpine minimal)
-RUN apk add --no-cache shadow
+# Copy production build output
+COPY --from=build /app/dist /app/dist
+COPY --from=build /app/node_modules /app/node_modules
+COPY --from=build /app/package.json /app/package.json
 
-# Copy nginx config
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 3000
 
-# Copy build artifacts — chown agar nginx user bisa akses
-COPY --from=build --chown=nginx:nginx /app/dist/client /usr/share/nginx/html
+ENV NODE_ENV=production
+ENV PORT=3000
 
-# Pastikan semua parent path bisa di-traverse oleh nginx user
-RUN chmod 755 /usr/share/nginx && \
-    chmod 755 /usr/share/nginx/html && \
-    find /usr/share/nginx/html -type d -exec chmod 755 {} \; && \
-    find /usr/share/nginx/html -type f -exec chmod 644 {} \;
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+# Jalankan TanStack Start SSR server
+CMD ["node", "--enable-source-maps", "dist/server/server.js"]
