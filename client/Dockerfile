@@ -1,30 +1,31 @@
-# Build stage
-FROM node:20-alpine AS build
-
+# ---- Build stage ----
+FROM node:22-alpine AS build
 WORKDIR /app
 
-# Copy package.json and install dependencies
-COPY package.json package-lock.json* ./
-RUN npm install
+COPY package*.json ./
+RUN npm ci
 
-# Copy all files and build
 COPY . .
 RUN npm run build
 
-# Serve stage using Nginx
+# ---- Production stage (nginx) ----
 FROM nginx:alpine
 
-# Remove default nginx static assets
-RUN rm -rf /usr/share/nginx/html/*
+# Install shadow untuk chown/chmod (diperlukan di alpine minimal)
+RUN apk add --no-cache shadow
 
-# Copy custom nginx config (with SPA fallback)
+# Copy nginx config
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copy built client assets from build stage
-COPY --from=build /app/dist/client /usr/share/nginx/html
+# Copy build artifacts — chown agar nginx user bisa akses
+COPY --from=build --chown=nginx:nginx /app/dist/client /usr/share/nginx/html
 
-# Expose port 80
+# Pastikan semua parent path bisa di-traverse oleh nginx user
+RUN chmod 755 /usr/share/nginx && \
+    chmod 755 /usr/share/nginx/html && \
+    find /usr/share/nginx/html -type d -exec chmod 755 {} \; && \
+    find /usr/share/nginx/html -type f -exec chmod 644 {} \;
+
 EXPOSE 80
 
-# Run nginx
 CMD ["nginx", "-g", "daemon off;"]
